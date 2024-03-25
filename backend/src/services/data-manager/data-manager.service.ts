@@ -11,29 +11,23 @@ import { Table } from 'src/models/table.model';
 import { Readable } from 'stream';
 import { RabbitMqService } from '../queue/queue.service';
 import { statusRegister } from 'src/enums/status.register.enum';
+import { TableService } from '../table/table.service';
 
 @Injectable()
 export class DataManagerService {
 
 
     constructor(
-        @InjectModel(Table.name) private readonly tableModel: Model<Table>,
-
-
+        private readonly tableService: TableService,
         private readonly rabbitMqService: RabbitMqService) {
-
 
     }
 
 
-    public async saveCSVDataInDb(file: Buffer) {
-
+    public async uploadCSVDataInDb(file: Buffer, name: string) {
 
         const readStream = Readable.from(file);
-
-
-        const tableData = await this.tableModel.create({})
-
+        const tableData = await this.tableService.generateNewTable(name)
         const { id, status } = tableData
 
         this.processData(readStream, id)
@@ -41,7 +35,7 @@ export class DataManagerService {
         return { message: "arquivo está sendo processado", id, status }
     }
 
-    public async processData(stream: Readable, id: string) {
+    private async processData(stream: Readable, id: string) {
 
         const queue = await this.rabbitMqService.generateQueue(id, "store", true)
 

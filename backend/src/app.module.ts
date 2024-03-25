@@ -3,6 +3,8 @@ import { UploadModule } from './modules/upload/upload.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MongooseModule } from '@nestjs/mongoose';
 import { config } from 'dotenv';
+import { TableController } from './controllers/table/table.controller';
+
 
 config()
 
@@ -12,7 +14,7 @@ config()
     MulterModule.register({
       dest: '/upload',
     }), UploadModule],
-  controllers: [],
+  controllers: [TableController],
   providers: [],
 })
 export class AppModule { }

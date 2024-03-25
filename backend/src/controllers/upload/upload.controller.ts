@@ -20,7 +20,7 @@ export class UploadController {
         ]
     })) file: Express.Multer.File) {
 
-       return this.dataManagerService.saveCSVDataInDb(file.buffer)
+       return this.dataManagerService.uploadCSVDataInDb(file.buffer,file.filename)
 
     }
 }
