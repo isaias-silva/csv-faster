@@ -1,0 +1,39 @@
+version: '1.0'
+
+services:
+  db:
+    image: mongo:3
+    restart: always
+    hostname: database-csv
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: '${USER_DB}'
+      MONGO_INITDB_ROOT_PASSWORD: '${PASS_DB}'
+
+    volumes:
+      - ./data:/data/db
+    ports:
+      - '27017:27017'
+
+    networks:
+      - fast-csv-network
+  queue:
+    image: rabbitmq:management
+    restart: always
+    hostname: nagentsrabbit
+
+    ports:
+      - '5673:5672'
+      - '15673:15672'
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+
+    environment:
+      RABBITMQ_DEFAULT_USER: ${USER_MQ}
+      RABBITMQ_DEFAULT_PASS: ${PASS_MQ}
+
+    networks:
+      - fast-csv-network
+      
+networks:
+  fast-csv-network:
+    driver: bridge

@@ -7,20 +7,20 @@ import { DataManagerService } from 'src/services/data-manager/data-manager.servi
 @Controller('upload')
 export class UploadController {
 
-    constructor(private readonly dataManagerService:DataManagerService){
+    constructor(private readonly dataManagerService: DataManagerService) {
 
     }
     @Post('/csv')
     @UseInterceptors(FileInterceptor('file'))
-  
-  async  uploadCsv(@UploadedFile( new ParseFilePipe({
-        validators:[
-            new FileTypeValidator({ fileType: 'text/csv'}),
+
+    uploadCsv(@UploadedFile(new ParseFilePipe({
+        validators: [
+            new FileTypeValidator({ fileType: 'text/csv' }),
 
         ]
-    })) file: Express.Multer.File){
-       
-        return 'ok'
-       
+    })) file: Express.Multer.File) {
+
+       return this.dataManagerService.saveCSVDataInDb(file.buffer)
+
     }
 }
