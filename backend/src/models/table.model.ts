@@ -9,6 +9,8 @@ export type TableDocument = HydratedDocument<Table>;
 export class Table {
     @Prop({ default: statusTable.LOAD, required: true })
     status: statusTable
+    @Prop()
+    name: string
 }
 
 export const tableSchema = SchemaFactory.createForClass(Table);

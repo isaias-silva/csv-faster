@@ -7,13 +7,13 @@ import { DataManagerService } from 'src/services/data-manager/data-manager.servi
 import { RabbitMqService } from 'src/services/queue/queue.service';
 import { RegisterService } from 'src/services/register/register.service';
 import { TableService } from 'src/services/table/table.service';
+import { TableModule } from '../table/table.module';
 
 
 @Module({
 
-    imports: [MongooseModule.forFeature([
-        { name: Register.name, schema: registerSchema },
-        { name: Table.name, schema: tableSchema }])],
+    imports: [
+        TableModule],
 
     providers: [DataManagerService,
         RabbitMqService,

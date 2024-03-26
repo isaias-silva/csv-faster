@@ -4,6 +4,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { MongooseModule } from '@nestjs/mongoose';
 import { config } from 'dotenv';
 import { TableController } from './controllers/table/table.controller';
+import { TableModule } from './modules/table/table.module';
 
 
 config()
@@ -11,10 +12,15 @@ config()
 @Module({
   imports: [
     MongooseModule.forRoot(`mongodb://${process.env.USER_DB}:${process.env.PASS_DB}@localhost:27017`),
+    
     MulterModule.register({
       dest: '/upload',
-    }), UploadModule],
-  controllers: [TableController],
+    }),
+     UploadModule, 
+     TableModule,
+  
+  ],
+  controllers: [],
   providers: [],
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { statusRegister } from 'src/enums/status.register.enum';
@@ -8,9 +8,11 @@ import dateConvert from 'src/utils/date.convert';
 
 @Injectable()
 export class RegisterService {
-constructor(@InjectModel(Register.name) private readonly registerModel: Model<Register>){}
+    constructor(@InjectModel(Register.name) private readonly registerModel: Model<Register>) { }
 
-   async saveRegisterByPayload(payload: string) {
+    private logger: Logger = new Logger(RegisterService.name)
+
+    async saveRegisterByPayload(payload: string) {
 
 
         const object: IcsvEnterUnit = JSON.parse(payload)
@@ -40,7 +42,7 @@ constructor(@InjectModel(Register.name) private readonly registerModel: Model<Re
                 cancellation_date: object['data cancelamento'] ? new Date(object['data cancelamento']) : null,
 
                 next_cycle: dateConvert(object['próximo ciclo']),
-               
+
                 subscriber_id: object['ID assinante'],
 
                 table_id: table_id,
@@ -61,17 +63,28 @@ constructor(@InjectModel(Register.name) private readonly registerModel: Model<Re
                     objectCreate.status = statusRegister.UPGRADE
                     break
                 case statusRegister.ATRASADA:
-                     objectCreate.status = statusRegister.ATRASADA
+                    objectCreate.status = statusRegister.ATRASADA
                     break
                 default:
                     throw 'invalid status in csv'
             }
-            
+
             return await this.registerModel.create(objectCreate)
 
         } catch (err) {
-            
+
             throw err
         }
+    }
+
+    async getRegisterOfTable(table_id: string) {
+
+        return await this.registerModel.find({ table_id })
+    }
+
+    async clearRegisterOfTable(table_id: string) {
+
+        this.logger.debug(`delete register for table ${table_id}`)
+        await this.registerModel.deleteMany({ table_id })
     }
 }
