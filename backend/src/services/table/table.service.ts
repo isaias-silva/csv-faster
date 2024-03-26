@@ -26,7 +26,7 @@ export class TableService {
             $project: {
                 _id: 1,
                 name: 1,
-                status:1
+                status: 1
 
             }
         }]).exec()
@@ -39,9 +39,34 @@ export class TableService {
         if (!table) {
             throw new NotFoundException('table not found')
         }
+        
         const { name, id, status } = table
         const count = registers.length
-        return { name, id, registers, count, status }
+        return { name, id, count, status }
+    }
+
+    async getMMRofTable(_id: string, month: number, year: number) {
+        const table = await this.tableModel.findOne({ _id })
+
+        if (!table) {
+            throw new NotFoundException('table not found')
+        }
+        const registersMonth = await this.registerService.getMMRforRegisterPerMonth(_id, month, year)
+        let totalMRR = 0;
+        for (const register of registersMonth) {
+            totalMRR += register.value;
+        }
+        return { registersMonth, totalMRR }
+    }
+    async getChurnRateOfTable(_id: string, month: number, year: number) {
+        const table = await this.tableModel.findOne({ _id })
+
+        if (!table) {
+            throw new NotFoundException('table not found')
+        }
+        const { registers, calceledRegisters } = await this.registerService.getChurnRateForRegisterPerMonth(_id, month, year)
+        const churnRate = (calceledRegisters.length / registers.length) * 100
+        return { churnRate, registers }
     }
 
     async deleteTable(_id: string) {
@@ -53,6 +78,7 @@ export class TableService {
         Promise.all([this.registerService.clearRegisterOfTable(_id), this.tableModel.deleteOne({ _id })])
         return { message: "table deleted" }
     }
+
     async completeTable(_id: string) {
         const table = await this.tableModel.findOne({ _id })
         if (table) {

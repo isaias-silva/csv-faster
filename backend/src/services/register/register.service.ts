@@ -31,7 +31,7 @@ export class RegisterService {
 
                 charge_per_day: parseInt(object['cobrada a cada X dias']),
 
-                value: parseInt(object['valor']),
+                value: parseFloat(object['valor'].replace(',', '.')),
 
                 status: statusRegister.ACTIVE,
 
@@ -86,5 +86,30 @@ export class RegisterService {
 
         this.logger.debug(`delete register for table ${table_id}`)
         await this.registerModel.deleteMany({ table_id })
+    }
+
+    async getMMRforRegisterPerMonth(table_id: string, month: number, year: number) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        const registers = await this.registerModel.find({
+            status: statusRegister.ACTIVE,
+            table_id,
+
+            init_date: { $gte: startDate, $lte: endDate }
+        });
+        return registers
+    }
+    async getChurnRateForRegisterPerMonth(table_id: string, month: number, year: number) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        const registers = await this.registerModel.find({
+            table_id,
+            init_date: { $gte: startDate, $lte: endDate }
+        });
+        const calceledRegisters = registers.filter((v) => v.status == statusRegister.CANCELLED || v.status == statusRegister.TRIAL_CANCELLED)
+
+        return { registers, calceledRegisters }
     }
 }
