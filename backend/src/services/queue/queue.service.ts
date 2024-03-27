@@ -21,7 +21,7 @@ export class RabbitMqService {
 
     async connect() {
 
-        const url = `amqp://${process.env.USER_MQ}:${process.env.PASS_MQ}@localhost:5673`
+        const url = `amqp://${process.env.USER_MQ}:${process.env.PASS_MQ}@csv-queue:5672`
 
         try {
             const connection = await amqp.connect(url)

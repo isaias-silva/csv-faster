@@ -14,7 +14,7 @@ export class TableService {
 
     async generateNewTable(nameTable: string) {
 
-        const count = await this.tableModel.countDocuments({ nameTable })
+        const count = await this.tableModel.countDocuments({ name: nameTable })
         let name = count > 0 ? nameTable + count : nameTable
 
         return await this.tableModel.create({ name })
@@ -39,7 +39,7 @@ export class TableService {
         if (!table) {
             throw new NotFoundException('table not found')
         }
-        
+
         const { name, id, status } = table
         const count = registers.length
         return { name, id, count, status }
@@ -54,7 +54,10 @@ export class TableService {
         const registersMonth = await this.registerService.getMMRforRegisterPerMonth(_id, month, year)
         let totalMRR = 0;
         for (const register of registersMonth) {
-            totalMRR += register.value;
+            const {  value } = register
+
+            totalMRR += value;
+
         }
         return { registersMonth, totalMRR }
     }

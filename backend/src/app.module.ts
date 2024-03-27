@@ -11,7 +11,7 @@ config()
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`mongodb://${process.env.USER_DB}:${process.env.PASS_DB}@localhost:27017`),
+    MongooseModule.forRoot(`mongodb://${process.env.USER_DB}:${process.env.PASS_DB}@database-csv:27017`),
     
     MulterModule.register({
       dest: '/upload',

@@ -1,6 +1,20 @@
 version: '1.0'
 
 services:
+  api:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${PORT}:${PORT}'
+
+    networks:
+      - fast-csv-network
+    depends_on:
+      - db
+      - queue
+
   db:
     image: mongo:3
     restart: always
@@ -19,7 +33,7 @@ services:
   queue:
     image: rabbitmq:management
     restart: always
-    hostname: nagentsrabbit
+    hostname: csv-queue
 
     ports:
       - '5673:5672'
@@ -33,7 +47,7 @@ services:
 
     networks:
       - fast-csv-network
-      
+
 networks:
   fast-csv-network:
     driver: bridge
